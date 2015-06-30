@@ -8,20 +8,40 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <Border Name="bck">
+        <Grid Name="bck">
             <Image Source="kiss.jpg" Stretch="Fill" />
-        </Border>
-
-        <Grid Margin="100">
-            <Rectangle ClipToBounds="True">
-                <i:Interaction.Behaviors>
-                    <local:BlurBackgroundBehavior BackgroundContent="{Binding ElementName=bck}" />
-                </i:Interaction.Behaviors>
-            </Rectangle>
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="Проверка" TextAlignment="Center" />
-                <Button Content="Press me" Padding="15,3" />
-            </StackPanel>
+            <ScrollViewer Width="200" Margin="30">
+                <ScrollViewer.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Padding" Value="18,5" />
+                        <Setter Property="Margin" Value="5" />
+                    </Style>
+                </ScrollViewer.Resources>
+                <StackPanel>
+                    <Button Content="aklsjdkl" />
+                    <Button Content="aklsjdkl" />
+                    <Button Content="aklsjdkl" />
+                    <Button Content="aklsjdkl" />
+                    <Button Content="aklsjdkl" />
+                    <Button Content="aklsjdkl" />
+                    <Button Content="aklsjdkl" />
+                    <Button Content="aklsjdkl" />
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
+
+        <ScrollViewer Margin="100">
+            <Grid>
+                <Rectangle ClipToBounds="True">
+                    <i:Interaction.Behaviors>
+                        <local:BlurBackgroundBehavior BackgroundContent="{Binding ElementName=bck}" />
+                    </i:Interaction.Behaviors>
+                </Rectangle>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="Проверка" TextAlignment="Center" />
+                    <Button Content="Press me" Padding="15,3" />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </Window>

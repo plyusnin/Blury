@@ -10,15 +10,32 @@ namespace Blury
 {
     public class BlurBackgroundBehavior : Behavior<Shape>
     {
+        public BlurBackgroundBehavior()
+        {
+            _x = new Rectangle();
+            _x.Effect = new BlurEffect
+            {
+                Radius = 40,
+                KernelType = KernelType.Gaussian,
+                RenderingBias = RenderingBias.Quality
+            };
+            _x.SetBinding(Shape.FillProperty,
+                                        new Binding
+                                        {
+                                            Source = this,
+                                            Path = new PropertyPath(BrushXProperty)
+                                        });
+        }
+
         public static readonly DependencyProperty BackgroundContentProperty = DependencyProperty.Register(
-            "BackgroundContent", typeof (UIElement), typeof (BlurBackgroundBehavior), new PropertyMetadata(OnContainerChanged));
+            "BackgroundContent", typeof (FrameworkElement), typeof (BlurBackgroundBehavior), new PropertyMetadata(OnContainerChanged));
 
         public static readonly DependencyProperty BrushProperty = DependencyProperty.Register(
             "Brush", typeof (VisualBrush), typeof (BlurBackgroundBehavior), new PropertyMetadata(default(VisualBrush)));
 
-        public UIElement BackgroundContent
+        public FrameworkElement BackgroundContent
         {
-            get { return (UIElement)GetValue(BackgroundContentProperty); }
+            get { return (FrameworkElement)GetValue(BackgroundContentProperty); }
             set { SetValue(BackgroundContentProperty, value); }
         }
 
@@ -28,17 +45,21 @@ namespace Blury
             set { SetValue(BrushProperty, value); }
         }
 
+        public static readonly DependencyProperty BrushXProperty = DependencyProperty.Register(
+            "BrushX", typeof (VisualBrush), typeof (BlurBackgroundBehavior), new PropertyMetadata(default(VisualBrush)));
+
+        private readonly Rectangle _x;
+
+        public VisualBrush BrushX
+        {
+            get { return (VisualBrush)GetValue(BrushXProperty); }
+            set { SetValue(BrushXProperty, value); }
+        }
+
         /// <summary>Called after the behavior is attached to an AssociatedObject.</summary>
         /// <remarks>Override this to hook up functionality to the AssociatedObject.</remarks>
         protected override void OnAttached()
         {
-            AssociatedObject.Effect = new BlurEffect
-                                      {
-                                          Radius = 80,
-                                          KernelType = KernelType.Gaussian,
-                                          RenderingBias = RenderingBias.Quality
-                                      };
-
             AssociatedObject.SetBinding(Shape.FillProperty,
                                         new Binding
                                         {
@@ -54,6 +75,7 @@ namespace Blury
         {
             if (AssociatedObject != null && BackgroundContent != null && Brush != null)
             {
+                BrushX.Viewbox = new Rect(new Point(), BackgroundContent.RenderSize);
                 var difference = AssociatedObject.TranslatePoint(new Point(), BackgroundContent);
                 Brush.Viewbox = new Rect(difference, AssociatedObject.RenderSize);
             }
@@ -61,17 +83,25 @@ namespace Blury
 
         private static void OnContainerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((BlurBackgroundBehavior)d).OnContainerChanged((UIElement)e.OldValue, (UIElement)e.NewValue);
+            ((BlurBackgroundBehavior)d).OnContainerChanged((FrameworkElement)e.OldValue, (FrameworkElement)e.NewValue);
         }
 
-        private void OnContainerChanged(UIElement oldValue, UIElement newValue)
+        private void OnContainerChanged(UIElement oldValue, FrameworkElement newValue)
         {
             if (oldValue != null)
                 oldValue.LayoutUpdated -= OnContainerLayoutUpdated;
 
             if (newValue != null)
             {
-                Brush = new VisualBrush(newValue)
+                _x.SetBinding(FrameworkElement.WidthProperty, new Binding { Source = newValue, Path = new PropertyPath(FrameworkElement.ActualWidthProperty) });
+                _x.SetBinding(FrameworkElement.HeightProperty, new Binding { Source = newValue, Path = new PropertyPath(FrameworkElement.ActualHeightProperty) });
+
+                BrushX = new VisualBrush(newValue)
+                {
+                    ViewboxUnits = BrushMappingMode.Absolute
+                };
+
+                Brush = new VisualBrush(_x)
                         {
                             ViewboxUnits = BrushMappingMode.Absolute
                         };
