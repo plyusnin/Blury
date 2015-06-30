@@ -3,10 +3,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:Blury"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <Border Name="bck">
+            <Image Source="kiss.jpg" Stretch="Fill" />
+        </Border>
+
+        <Grid Margin="100">
+            <Rectangle ClipToBounds="True">
+                <i:Interaction.Behaviors>
+                    <local:BlurBackgroundBehavior BackgroundContent="{Binding ElementName=bck}" />
+                </i:Interaction.Behaviors>
+            </Rectangle>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="Проверка" TextAlignment="Center" />
+                <Button Content="Press me" Padding="15,3" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
