@@ -6,42 +6,118 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:Blury"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display"
+        Title="MainWindow" Width="400" SizeToContent="Height">
+
+    <Window.Resources>
+        <VisualBrush
+            x:Key="DotFillBrush"
+            TileMode="Tile"
+            Viewport="0,0,10,10"
+            ViewportUnits="Absolute"
+            Viewbox="0,0,12,12"
+            ViewboxUnits="Absolute">
+            <VisualBrush.Visual>
+                <Ellipse
+                    Fill="#00C0FF"
+                    Width="10" Height="10" />
+            </VisualBrush.Visual>
+        </VisualBrush>
+        <VisualBrush
+            x:Key="HatchBrush"
+            TileMode="Tile" Viewport="0,0,5,5"
+            ViewportUnits="Absolute" Viewbox="0,0,5,5"
+            ViewboxUnits="Absolute">
+            <VisualBrush.Visual>
+                <Canvas>
+                    <Path Stroke="#89C4F4" Data="M 0 0 l 5 5" />
+                    <Path Stroke="#89C4F4" Data="M 0 5 l 5 -5" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </Window.Resources>
+
     <Grid>
-        <Grid Name="bck">
-            <Image Source="kiss.jpg" Stretch="Fill" />
-            <ScrollViewer Width="200" Margin="30">
-                <ScrollViewer.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Padding" Value="18,5" />
-                        <Setter Property="Margin" Value="5" />
-                    </Style>
-                </ScrollViewer.Resources>
-                <StackPanel>
-                    <Button Content="aklsjdkl" />
-                    <Button Content="aklsjdkl" />
-                    <Button Content="aklsjdkl" />
-                    <Button Content="aklsjdkl" />
-                    <Button Content="aklsjdkl" />
-                    <Button Content="aklsjdkl" />
-                    <Button Content="aklsjdkl" />
-                    <Button Content="aklsjdkl" />
-                </StackPanel>
-            </ScrollViewer>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="25" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.RowSpan="4" Name="bck">
+            <Grid.Background>
+                <RadialGradientBrush>
+                    <GradientStop Color="#5D8CAE" Offset="0" />
+                    <GradientStop Color="#48929B" Offset="1" />
+                </RadialGradientBrush>
+            </Grid.Background>
+            <Rectangle Fill="{StaticResource HatchBrush}" Opacity="0.3" />
+            <Rectangle Opacity="1">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+                        <GradientStop Color="#FF26A65B" Offset="0" />
+                        <GradientStop Color="#FF229351" Offset="0.38" />
+                        <GradientStop Color="#FF87D37C" Offset="0.4" />
+                        <GradientStop Color="#00000000" Offset="0.408" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
         </Grid>
 
-        <ScrollViewer Margin="100">
-            <Grid>
-                <Rectangle ClipToBounds="True">
-                    <i:Interaction.Behaviors>
-                        <local:BlurBackgroundBehavior BackgroundContent="{Binding ElementName=bck}" />
-                    </i:Interaction.Behaviors>
-                </Rectangle>
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="Проверка" TextAlignment="Center" />
-                    <Button Content="Press me" Padding="15,3" />
+        <local:ArrowBorder Grid.Row="0" Background="#ECF0F1" BorderBrush="#FFA631" BorderThickness="1.5">
+            <local:ArrowBorder.Effect>
+                <DropShadowEffect Direction="-90" Opacity="0.2" BlurRadius="0" ShadowDepth="3"/>
+            </local:ArrowBorder.Effect>
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center">
+                    <TextBlock Text="Версия" HorizontalAlignment="Center" FontSize="9" Margin="0" />
+                    <TextBlock Text="136.0" HorizontalAlignment="Center" FontSize="15" FontWeight="SemiBold" Margin="0" />
+                    <TextBlock Text="12.07.2015" HorizontalAlignment="Center" FontSize="9" Margin="0" />
                 </StackPanel>
+
+                <TextBlock Grid.Column="1" Grid.Row="0" Text="БС-ДПС" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" />
+                <TextBlock Grid.Column="1" Grid.Row="1" Text="Основной модуль" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Grid>
-        </ScrollViewer>
+        </local:ArrowBorder>
+
+        <ItemsControl Grid.Row="2">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:UpdateTargetViewModel}">
+                    <Grid Margin="40,3">
+                        <Rectangle RadiusX="8" RadiusY="8">
+                            <i:Interaction.Behaviors>
+                                <local:BlurBackgroundBehavior BackgroundContent="{Binding ElementName=bck}" />
+                            </i:Interaction.Behaviors>
+                        </Rectangle>
+                        <Rectangle RadiusX="8" RadiusY="8" Fill="White" Opacity="0.2" Stroke="#264348" />
+                        <TextBlock Text="{Binding TargetName}" Margin="10,5" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <local:UpdateTargetViewModel TargetName="БС-ДПС №10007/1" />
+            <local:UpdateTargetViewModel TargetName="БС-ДПС №10007/2" />
+        </ItemsControl>
+
+
+        <Grid Grid.Row="3">
+            <Rectangle ClipToBounds="True" Visibility="Hidden">
+                <i:Interaction.Behaviors>
+                    <local:BlurBackgroundBehavior BackgroundContent="{Binding ElementName=bck}" />
+                </i:Interaction.Behaviors>
+            </Rectangle>
+            <TextBlock Text="{Binding TargetName}" Margin="5,3" />
+        </Grid>
+
     </Grid>
 </Window>
