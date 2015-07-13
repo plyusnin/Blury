@@ -42,10 +42,11 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="25" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="7" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.RowSpan="4" Name="bck">
+        <Grid Grid.RowSpan="5" Name="bck">
             <Grid.Background>
                 <RadialGradientBrush>
                     <GradientStop Color="#5D8CAE" Offset="0" />
@@ -53,7 +54,7 @@
                 </RadialGradientBrush>
             </Grid.Background>
             <Rectangle Fill="{StaticResource HatchBrush}" Opacity="0.3" />
-            <Rectangle Opacity="1">
+            <Rectangle Opacity="0.6">
                 <Rectangle.Fill>
                     <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
                         <GradientStop Color="#FF26A65B" Offset="0" />
@@ -110,13 +111,14 @@
         </ItemsControl>
 
 
-        <Grid Grid.Row="3">
-            <Rectangle ClipToBounds="True" Visibility="Hidden">
+        <Grid Grid.Row="4">
+            <Rectangle ClipToBounds="True">
                 <i:Interaction.Behaviors>
                     <local:BlurBackgroundBehavior BackgroundContent="{Binding ElementName=bck}" />
                 </i:Interaction.Behaviors>
             </Rectangle>
-            <TextBlock Text="{Binding TargetName}" Margin="5,3" />
+            <Border Background="#8DB255" Opacity="0.1" BorderBrush="#264348" BorderThickness="0,1,0,0" />
+            <Button Content="Поиск" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="24, 5" Margin="8" />
         </Grid>
 
     </Grid>
