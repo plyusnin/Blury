@@ -41,7 +41,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="25" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="7" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -53,17 +53,16 @@
                     <GradientStop Color="#48929B" Offset="1" />
                 </RadialGradientBrush>
             </Grid.Background>
-            <Rectangle Fill="{StaticResource HatchBrush}" Opacity="0.3" />
-            <Rectangle Opacity="0.6">
+            <Rectangle Opacity="1">
                 <Rectangle.Fill>
                     <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
-                        <GradientStop Color="#FF26A65B" Offset="0" />
-                        <GradientStop Color="#FF229351" Offset="0.38" />
-                        <GradientStop Color="#FF87D37C" Offset="0.4" />
-                        <GradientStop Color="#00000000" Offset="0.408" />
+                        <GradientStop Color="#03A678" Offset="0" />
+                        <GradientStop Color="#03A678" Offset="0.7" />
+                        <GradientStop Color="#00000000" Offset="0.701" />
                     </LinearGradientBrush>
                 </Rectangle.Fill>
             </Rectangle>
+            <Rectangle Fill="{StaticResource HatchBrush}" Opacity="0.3" />
         </Grid>
 
         <local:ArrowBorder Grid.Row="0" Background="#ECF0F1" BorderBrush="#FFA631" BorderThickness="1.5">
@@ -95,19 +94,28 @@
         <ItemsControl Grid.Row="2">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:UpdateTargetViewModel}">
-                    <Grid Margin="40,3">
+                    <Grid Margin="30,3">
                         <Rectangle RadiusX="8" RadiusY="8">
                             <i:Interaction.Behaviors>
                                 <local:BlurBackgroundBehavior BackgroundContent="{Binding ElementName=bck}" />
                             </i:Interaction.Behaviors>
                         </Rectangle>
-                        <Rectangle RadiusX="8" RadiusY="8" Fill="White" Opacity="0.2" Stroke="#264348" />
+                        <Rectangle RadiusX="8" RadiusY="8" Fill="White" Opacity="0.2" />
+                        <Rectangle RadiusX="8" RadiusY="8" Opacity="1" Stroke="#60264348">
+                            <Rectangle.Fill>
+                                <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+                                    <GradientStop Color="#26A65B" Offset="0" />
+                                    <GradientStop Color="#26A65B" Offset="{Binding Compleate}" />
+                                    <GradientStop Color="#00000000" Offset="{Binding Compleate}" />
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
                         <TextBlock Text="{Binding TargetName}" Margin="10,5" />
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
-            <local:UpdateTargetViewModel TargetName="БС-ДПС №10007/1" />
-            <local:UpdateTargetViewModel TargetName="БС-ДПС №10007/2" />
+            <local:UpdateTargetViewModel TargetName="БС-ДПС №10007/1" Compleate="0.3" />
+            <local:UpdateTargetViewModel TargetName="БС-ДПС №10007/2" Compleate="0.0" />
         </ItemsControl>
 
 
