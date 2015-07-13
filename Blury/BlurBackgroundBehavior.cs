@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Security;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Interactivity;
@@ -39,7 +40,7 @@ namespace Blury
                              });
             _x.Effect = new BlurEffect
                         {
-                            Radius = this.Radius,
+                            Radius = Radius,
                             KernelType = KernelType.Gaussian,
                             RenderingBias = RenderingBias.Quality
                         };
@@ -103,8 +104,8 @@ namespace Blury
                 BrushX.ViewportUnits = BrushMappingMode.Absolute;
                 BrushX.Viewport = new Rect(new Point(Radius, Radius), BackgroundContent.RenderSize);
 
-                var difference = AssociatedObject.TranslatePoint(new Point(Radius, Radius), BackgroundContent);
-                Brush.Viewbox = new Rect(difference, AssociatedObject.RenderSize);
+                var difference = AssociatedObject.TranslatePoint(new Point(), BackgroundContent);
+                Brush.Viewbox = new Rect(difference + new Vector(Radius, Radius), AssociatedObject.RenderSize);
             }
         }
 

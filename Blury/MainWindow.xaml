@@ -12,30 +12,36 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        
-        <Grid Grid.Column="0" Name="bck">
-            <Border>
-                <Border.Background>
-                    <RadialGradientBrush>
-                        <GradientStop Color="#FFFF00A2" Offset="0"/>
-                        <GradientStop Color="#FF6A0044" Offset="1"/>
-                    </RadialGradientBrush>
-                </Border.Background>
-            </Border>
+
+        <Grid Grid.Column="0" Margin="80">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <Grid Name="bck" Grid.RowSpan="3">
+                <Image Source="train22_poezd_b03.jpg" Stretch="Fill" />
+                <Ellipse Width="150" Height="150" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                         Fill="Chocolate" />
+            </Grid>
+
+            <GridSplitter Grid.Row="1" Height="2" Background="CornflowerBlue" HorizontalAlignment="Stretch" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" />
+            
+            <Grid Grid.Row="2">
+                <Rectangle ClipToBounds="True">
+                    <i:Interaction.Behaviors>
+                        <local:BlurBackgroundBehavior _x="{Binding ElementName=X}"
+                                                      BackgroundContent="{Binding ElementName=bck}" />
+                    </i:Interaction.Behaviors>
+                </Rectangle>
+            </Grid>
         </Grid>
 
-        <Grid Grid.Column="0">
-            <Rectangle ClipToBounds="True">
-                <i:Interaction.Behaviors>
-                    <local:BlurBackgroundBehavior _x="{Binding ElementName=X}" BackgroundContent="{Binding ElementName=bck}" />
-                </i:Interaction.Behaviors>
-            </Rectangle>
-        </Grid>
-
-        <Border Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="Chocolate" BorderThickness="1">
+        <Border Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="Chocolate"
+                BorderThickness="1">
             <Rectangle x:Name="X" />
         </Border>
-        <Border Grid.Column="1" Margin="80" BorderBrush="Gray" BorderThickness="1">
-        </Border>
+        <Border Grid.Column="1" Margin="80" BorderBrush="Gray" BorderThickness="1" />
     </Grid>
 </Window>
