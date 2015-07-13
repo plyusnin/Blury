@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Interactivity;
@@ -10,28 +11,36 @@ namespace Blury
 {
     public class BlurBackgroundBehavior : Behavior<Shape>
     {
-        public BlurBackgroundBehavior()
-        {
-            _x = new Rectangle();
-            _x.Effect = new BlurEffect
-            {
-                Radius = 40,
-                KernelType = KernelType.Gaussian,
-                RenderingBias = RenderingBias.Quality
-            };
-            _x.SetBinding(Shape.FillProperty,
-                                        new Binding
-                                        {
-                                            Source = this,
-                                            Path = new PropertyPath(BrushXProperty)
-                                        });
-        }
-
         public static readonly DependencyProperty BackgroundContentProperty = DependencyProperty.Register(
             "BackgroundContent", typeof (FrameworkElement), typeof (BlurBackgroundBehavior), new PropertyMetadata(OnContainerChanged));
 
         public static readonly DependencyProperty BrushProperty = DependencyProperty.Register(
             "Brush", typeof (VisualBrush), typeof (BlurBackgroundBehavior), new PropertyMetadata(default(VisualBrush)));
+
+        public static readonly DependencyProperty BrushXProperty = DependencyProperty.Register(
+            "BrushX", typeof (VisualBrush), typeof (BlurBackgroundBehavior), new PropertyMetadata(default(VisualBrush)));
+
+        private readonly Rectangle _x;
+
+        internal double Radius = 40;
+        private Rectangle _x1;
+
+        public BlurBackgroundBehavior()
+        {
+            _x = new Rectangle();
+            _x.SetBinding(Shape.FillProperty,
+                          new Binding
+                          {
+                              Source = this,
+                              Path = new PropertyPath(BrushXProperty)
+                          });
+            _x.Effect = new BlurEffect
+                        {
+                            Radius = Radius,
+                            KernelType = KernelType.Gaussian,
+                            RenderingBias = RenderingBias.Performance
+                        };
+        }
 
         public FrameworkElement BackgroundContent
         {
@@ -44,11 +53,6 @@ namespace Blury
             get { return (VisualBrush)GetValue(BrushProperty); }
             set { SetValue(BrushProperty, value); }
         }
-
-        public static readonly DependencyProperty BrushXProperty = DependencyProperty.Register(
-            "BrushX", typeof (VisualBrush), typeof (BlurBackgroundBehavior), new PropertyMetadata(default(VisualBrush)));
-
-        private readonly Rectangle _x;
 
         public VisualBrush BrushX
         {
@@ -75,11 +79,18 @@ namespace Blury
         {
             if (AssociatedObject != null && BackgroundContent != null && Brush != null)
             {
-                BrushX.Viewbox = new Rect(new Point(), BackgroundContent.RenderSize);
-                var difference = AssociatedObject.TranslatePoint(new Point(), BackgroundContent);
-                Brush.Viewbox = new Rect(difference, AssociatedObject.RenderSize);
+                //BrushX.ViewboxUnits = BrushMappingMode.Absolute;
+                //BrushX.Viewbox = new Rect(new Point(0, 0), BackgroundContent.RenderSize);
+
+                BrushX.ViewportUnits = BrushMappingMode.Absolute;
+                BrushX.Viewport = new Rect(new Point(Radius, Radius), BackgroundContent.RenderSize);
+
+                Point difference = AssociatedObject.TranslatePoint(new Point(), BackgroundContent);
+                Brush.Viewbox = new Rect(difference + new Vector(Radius, Radius), AssociatedObject.RenderSize);
             }
         }
+
+        private Size half(Size s) { return new Size(s.Width / 2, s.Height / 2); }
 
         private static void OnContainerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -91,22 +102,40 @@ namespace Blury
             if (oldValue != null)
                 oldValue.LayoutUpdated -= OnContainerLayoutUpdated;
 
-            if (newValue != null)
-            {
-                _x.SetBinding(FrameworkElement.WidthProperty, new Binding { Source = newValue, Path = new PropertyPath(FrameworkElement.ActualWidthProperty) });
-                _x.SetBinding(FrameworkElement.HeightProperty, new Binding { Source = newValue, Path = new PropertyPath(FrameworkElement.ActualHeightProperty) });
+            Attache();
+        }
 
-                BrushX = new VisualBrush(newValue)
-                {
-                    ViewboxUnits = BrushMappingMode.Absolute
-                };
+        private void Attache()
+        {
+            if (BackgroundContent != null && _x != null)
+            {
+                _x.SetBinding(FrameworkElement.WidthProperty,
+                              new Binding
+                              {
+                                  Source = BackgroundContent,
+                                  Path = new PropertyPath(FrameworkElement.ActualWidthProperty),
+                                  Converter = new XSizeConverter(this)
+                              });
+                _x.SetBinding(FrameworkElement.HeightProperty,
+                              new Binding
+                              {
+                                  Source = BackgroundContent,
+                                  Path = new PropertyPath(FrameworkElement.ActualHeightProperty),
+                                  Converter = new XSizeConverter(this)
+                              });
+
+                BrushX = new VisualBrush(BackgroundContent)
+                         {
+                             //ViewboxUnits = BrushMappingMode.Absolute,
+                             TileMode = TileMode.FlipXY
+                         };
 
                 Brush = new VisualBrush(_x)
                         {
                             ViewboxUnits = BrushMappingMode.Absolute
                         };
 
-                newValue.LayoutUpdated += OnContainerLayoutUpdated;
+                BackgroundContent.LayoutUpdated += OnContainerLayoutUpdated;
                 UpdateBounds();
             }
             else
@@ -114,5 +143,18 @@ namespace Blury
         }
 
         private void OnContainerLayoutUpdated(object sender, EventArgs eventArgs) { UpdateBounds(); }
+    }
+
+    internal class XSizeConverter : IValueConverter
+    {
+        private readonly BlurBackgroundBehavior _blurBackgroundBehavior;
+        public XSizeConverter(BlurBackgroundBehavior BlurBackgroundBehavior) { _blurBackgroundBehavior = BlurBackgroundBehavior; }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value + 2 * _blurBackgroundBehavior.Radius;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) { throw new NotImplementedException(); }
     }
 }
